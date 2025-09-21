@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// import lamejs from "lamejs";
 
 const Interface = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -37,57 +38,90 @@ const Interface = () => {
     ]);
   }, []);
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          sampleRate: 16000,
-          channelCount: 1,
-          bitrate: 128000
-        }
-      });
-      
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
-      
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-      
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-      
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        await transcribeAudio(audioBlob);
-      };
-      
-      mediaRecorder.start();
-      setIsRecording(true);
-      setApiStatus('Recording...');
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
-      setApiStatus('Microphone access denied');
-      alert('Could not access your microphone. Please check permissions.');
-    }
-  };
+const startRecording = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        sampleRate: 16000,
+        channelCount: 1
+      }
+    });
 
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-      setIsRecording(false);
-      setApiStatus('Processing audio...');
-    }
-  };
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: "audio/webm" // widely supported
+    });
+
+    mediaRecorderRef.current = mediaRecorder;
+    audioChunksRef.current = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      audioChunksRef.current.push(event.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+      // convert webm/ogg Blob to MP3
+      const mp3Blob = await convertToMp3(new Blob(audioChunksRef.current));
+      await transcribeAudio(mp3Blob);
+    };
+
+    mediaRecorder.start();
+    setIsRecording(true);
+    setApiStatus("Recording...");
+  } catch (error) {
+    console.error("Error accessing microphone:", error);
+    setApiStatus("Microphone access denied");
+    alert("Could not access your microphone. Please check permissions.");
+  }
+};
+
+const stopRecording = () => {
+  if (mediaRecorderRef.current && isRecording) {
+    mediaRecorderRef.current.stop();
+    mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    setIsRecording(false);
+    setApiStatus("Processing audio...");
+  }
+};
+
+// convert Blob (webm/ogg) -> MP3
+
+const convertToMp3 = async (blob) => {
+  // Decode webm/ogg into PCM samples
+  const arrayBuffer = await blob.arrayBuffer();
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+  // Take channel 0 (mono)
+  const channelData = audioBuffer.getChannelData(0);
+
+  // Convert float samples (-1..1) to 16-bit PCM
+  const samples = new Int16Array(channelData.length);
+  for (let i = 0; i < channelData.length; i++) {
+    samples[i] = Math.max(-1, Math.min(1, channelData[i])) * 32767;
+  }
+
+  const mp3Encoder = new lamejs.Mp3Encoder(
+    1,             // 1 channel
+    audioCtx.sampleRate,
+    128            // kbps
+  );
+
+  const mp3Data = [];
+  const mp3buf = mp3Encoder.encodeBuffer(samples);
+  if (mp3buf.length > 0) mp3Data.push(mp3buf);
+  const flushBuf = mp3Encoder.flush();
+  if (flushBuf.length > 0) mp3Data.push(flushBuf);
+
+  return new Blob(mp3Data, { type: "audio/mp3" });
+};
+
 
   const transcribeAudio = async (audioBlob) => {
     setIsProcessing(true);
     setTranscript('');
     
     const formData = new FormData();
-    formData.append('audio', audioBlob, 'recording.webm');
+    formData.append('audio', audioBlob, 'recording.ogg');
     formData.append('sourceLang', sourceLang);
     formData.append('targetLang', targetLang);
     try {
