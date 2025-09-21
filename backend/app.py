@@ -13,11 +13,11 @@ url_transcribe = "https://api.spi-tch.com/v1/transcriptions"
 url_translate = "https://api.spi-tch.com/v1/translate"
 SPITCH_API_KEY = os.get("SPITCH_API_KEY")
 
-import os
-os.environ["PATH"] += os.pathsep + r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin"
+# import os
+# os.environ["PATH"] += os.pathsep + r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin"
 
-AudioSegment.converter = r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin\ffmpeg.exe"
-AudioSegment.ffprobe   = r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin\ffprobe.exe"
+# AudioSegment.converter = r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin\ffmpeg.exe"
+# AudioSegment.ffprobe   = r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin\ffprobe.exe"
 
 
 @app.route("/transcribe", methods=["POST"])
@@ -81,4 +81,5 @@ def translate_text(text, source_lang, target_lang):
     return response.json().get("text", "")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
