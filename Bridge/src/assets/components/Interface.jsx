@@ -86,26 +86,15 @@ const Interface = () => {
     setIsProcessing(true);
     setTranscript('');
     
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    formData.append('sourceLang', sourceLang);
+    formData.append('targetLang', targetLang);
     try {
-      // Convert blob to base64 for sending to backend
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      
-      reader.onloadend = async () => {
-        const base64Audio = reader.result.split(',')[1];
-        
-        // Send to backend for Spitch API processing
-        const response = await fetch('http://localhost:3001/api/transcribe', {
+      // Send to backend for Spitch API processing
+        const response = await fetch('http://localhost:5000/transcribe', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            audio: base64Audio,
-            sourceLang,
-            targetLang,
-            format: 'webm'
-          })
+          body: formData
         });
 
         if (!response.ok) {
@@ -115,9 +104,10 @@ const Interface = () => {
 
         const data = await response.json();
         
-        if (data.text) {
-          setTranscript(data.text);
+        if (data) {
+          setTranscript(data.translation);
           setApiStatus('Transcription complete');
+          
           
           // Save to history
           const newChat = {
@@ -131,7 +121,6 @@ const Interface = () => {
         } else {
           throw new Error('No transcription returned from API');
         }
-      };
       
     } catch (error) {
       console.error('Transcription error:', error);
