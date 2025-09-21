@@ -8,6 +8,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+AudioSegment.converter = "ffmpeg/ffmpeg"
 
 url_transcribe = "https://api.spi-tch.com/v1/transcriptions"
 url_translate = "https://api.spi-tch.com/v1/translate"
