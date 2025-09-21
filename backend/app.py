@@ -3,13 +3,34 @@ import requests
 import os
 from pydub import AudioSegment
 import io
+import stat
+from pathlib import Path
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-# AudioSegment.converter = os.path.join(os.path.dirname(__file__), "ffmpeg/ffmpeg")
-# AudioSegment.ffprobe = os.path.join(os.path.dirname(__file__), "ffmpeg/ffprobe")
+
+BIN_DIR = Path("ffmpeg")
+BIN_DIR.mkdir(exist_ok=True)
+
+# Assume you have downloaded/extracted ffmpeg & ffprobe here
+ffmpeg_path = BIN_DIR / "ffmpeg"
+ffprobe_path = BIN_DIR / "ffprobe"
+
+if ffmpeg_path.exists() or ffprobe_path.exists():
+    print(ffmpeg_path, ffprobe_path)
+
+
+# Make them executable
+for binary in [ffmpeg_path, ffprobe_path]:
+    st = binary.stat()
+    binary.chmod(st.st_mode | stat.S_IEXEC)
+print("Binaries are now executable!")
+
+AudioSegment.converter = str(ffmpeg_path)
+AudioSegment.ffprobe = str(ffprobe_path)
+
 
 url_transcribe = "https://api.spi-tch.com/v1/transcriptions"
 url_translate = "https://api.spi-tch.com/v1/translate"
