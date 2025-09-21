@@ -8,12 +8,12 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-AudioSegment.converter = "ffmpeg/ffmpeg"
-AudioSegment.ffprobe = "ffmpeg/ffprobe"
+AudioSegment.converter = os.path.join(os.path.dirname(__file__), "ffmpeg/ffmpeg")
+AudioSegment.ffprobe = os.path.join(os.path.dirname(__file__), "ffmpeg/ffprobe")
 
 url_transcribe = "https://api.spi-tch.com/v1/transcriptions"
 url_translate = "https://api.spi-tch.com/v1/translate"
-SPITCH_API_KEY = os.get("SPITCH_API_KEY")
+SPITCH_API_KEY = os.getenv("SPITCH_API_KEY")
 
 # import os
 # os.environ["PATH"] += os.pathsep + r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin"
