@@ -4,7 +4,7 @@ export default function Footer(){
     <div className="grid gap-5 sm:grid-cols-3 p-4">
       <div>
         <div className="flex gap-3">
-        <img className="w-[30px]" src="./public/Group 12@2x.jpg" />
+        <img className="w-[30px]" src="./Group 12@2x.jpg" />
         <p className="font-bold text-[1.3rem] sm:text-[1.5rem] ">Bridge</p>
       </div>
       <p className="font-light w-[220px] sm:text-[1.1rem] lg:text-[1.3rem] lg:w-[350px] ">Where Silence meets Connection.</p>
@@ -31,4 +31,5 @@ export default function Footer(){
       </p>
     </>
   )
+
 }
