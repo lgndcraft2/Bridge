@@ -176,7 +176,7 @@ const Interface = () => {
           Bridge
         </motion.h1>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
           {/* API Status Indicator */}
           <div className={`text-sm px-3 py-1 rounded-full ${
             isRecording ? 'bg-red-100 text-red-800' : 
@@ -186,13 +186,7 @@ const Interface = () => {
             {apiStatus || 'Ready'}
           </div>
 
-          {/* Mobile Hamburger Menu */}
-          <button
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="md:hidden p-2 rounded-lg"
-          >
-            <img src="/menu.svg" alt="Menu" className="w-6 h-6" />
-          </button>
+       
 
           <button
             onClick={() => setDarkMode(!darkMode)}
@@ -215,29 +209,7 @@ const Interface = () => {
       </header>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {showMobileMenu && (
-          <motion.div
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 300 }}
-            className="fixed top-16 right-4 z-40 md:hidden"
-          >
-            <div className={`p-4 rounded-lg shadow-xl ${
-              darkMode ? 'bg-gray-800' : 'bg-white'
-            }`}>
-              <button className="flex items-center space-x-2 w-full p-2">
-                <img src="/help-circle.svg" alt="Help" className="w-5 h-5" />
-                <span>Help</span>
-              </button>
-              <button className="flex items-center space-x-2 w-full p-2">
-                <img src="/type.svg" alt="Text size" className="w-5 h-5" />
-                <span>Text Size</span>
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Saved Chats Panel */}
@@ -338,7 +310,7 @@ const Interface = () => {
               className={`px-8 py-4 rounded-full text-white font-semibold text-lg flex items-center justify-center ${
                 isRecording 
                   ? 'bg-gradient-to-r from-red-500 to-pink-600' 
-                  : 'bg-gradient-to-r from-blue-500 to-purple-600'
+                  : 'bg-gradient-to-r from-blue-500/40 to-purple-600/60'
               } disabled:opacity-50`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -415,8 +387,8 @@ const Interface = () => {
               whileHover={{ scale: 1.05 }}
               className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
                 !transcript 
-                  ? 'bg-gray-400' 
-                  : 'bg-gradient-to-r from-green-500 to-teal-600 text-white'
+                  ? 'bg-gray-300' 
+                  : 'bg-gradient-to-r from-green-500 to-teal-600 text-black'
               }`}
             >
               <img src="/inbox.svg" alt="Download" className="w-5 h-5" />
@@ -429,8 +401,8 @@ const Interface = () => {
               whileHover={{ scale: 1.05 }}
               className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
                 !transcript 
-                  ? 'bg-gray-400' 
-                  : darkMode ? 'bg-gray-700' : 'bg-gray-200'
+                  ? 'bg-gray-300' 
+                  : darkMode ? 'bg-gray-700' : 'bg-gray-400'
               }`}
             >
               <img src="/save.svg" alt="Save" className="w-5 h-5" />
@@ -443,7 +415,7 @@ const Interface = () => {
               whileHover={{ scale: 1.05 }}
               className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
                 !transcript 
-                  ? 'bg-gray-400' 
+                  ? 'bg-gray-300' 
                   : darkMode ? 'bg-gray-700' : 'bg-gray-200'
               }`}
             >
@@ -486,7 +458,7 @@ const Interface = () => {
       <footer className={`py-6 text-center ${
         darkMode ? 'text-gray-400' : 'text-gray-600'
       }`}>
-        <p>Powered by Spitch ASR API • Built with React and Tailwind CSS</p>
+        <p>&copy; Bridge 2025.</p>
       </footer>
     </div>
   );
