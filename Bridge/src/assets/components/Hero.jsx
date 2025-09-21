@@ -47,7 +47,7 @@ export default function Hero(){
       </ul>
     </nav>
     <span>
-      <img src="public/1758095818439.jpg" className="absolute w-full  h-screen object-cover sm:object-fill" />
+      <img src="./1758095818439.jpg" className="absolute w-full  h-screen object-cover sm:object-fill" />
     </span>
     <div className="absolute inset-0 bg-gradient-to-b from-black/90 to-black/20 "></div>
     {
@@ -80,4 +80,5 @@ export default function Hero(){
     </div>
     </div>
   )
+
 }
