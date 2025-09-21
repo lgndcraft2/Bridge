@@ -1,46 +1,16 @@
 from flask import Flask, request, jsonify
 import requests
 import os
-from pydub import AudioSegment
 import io
-import stat
-from pathlib import Path
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
 
-BIN_DIR = Path("ffmpeg")
-BIN_DIR.mkdir(exist_ok=True)
-
-# Assume you have downloaded/extracted ffmpeg & ffprobe here
-ffmpeg_path = BIN_DIR / "ffmpeg"
-ffprobe_path = BIN_DIR / "ffprobe"
-
-if ffmpeg_path.exists() or ffprobe_path.exists():
-    print(ffmpeg_path, ffprobe_path)
-
-
-# Make them executable
-for binary in [ffmpeg_path, ffprobe_path]:
-    st = binary.stat()
-    binary.chmod(st.st_mode | stat.S_IEXEC)
-print("Binaries are now executable!")
-
-AudioSegment.converter = str(ffmpeg_path)
-AudioSegment.ffprobe = str(ffprobe_path)
-
-
 url_transcribe = "https://api.spi-tch.com/v1/transcriptions"
 url_translate = "https://api.spi-tch.com/v1/translate"
 SPITCH_API_KEY = os.getenv("SPITCH_API_KEY")
-
-# import os
-# os.environ["PATH"] += os.pathsep + r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin"
-
-# AudioSegment.converter = r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin\ffmpeg.exe"
-# AudioSegment.ffprobe   = r"C:\Users\LGND\ffmpeg-2025-09-18-git-c373636f55-full_build\bin\ffprobe.exe"
 
 
 @app.route("/transcribe", methods=["POST"])
@@ -53,14 +23,9 @@ def transcribe():
 
     audio_file = request.files["audio"]
 
-    # Convert .webm -> .wav
-    audio = AudioSegment.from_file(audio_file, format="webm")
-    wav_io = io.BytesIO()
-    audio.export(wav_io, format="wav")
-    wav_io.seek(0)
 
     headers = {"Authorization": f"Bearer {SPITCH_API_KEY}"}
-    files = {"content": ("recording.wav", wav_io, "audio/wav")}
+    files = {"content": (audio_file.filename, audio_file, audio_file.content_type)}
     payload = {
         "model": "legacy",
         "special_words": "",
