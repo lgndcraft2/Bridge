@@ -92,7 +92,7 @@ const Interface = () => {
     formData.append('targetLang', targetLang);
     try {
       // Send to backend for Spitch API processing
-        const response = await fetch('http://localhost:5000/transcribe', {
+        const response = await fetch('https://bridge-six-sand.vercel.app/transcribe', {
           method: 'POST',
           body: formData
         });
